@@ -157,7 +157,7 @@ private  void followLine(){
  double offset = 45; 
  double Tp = 50; 
  while(colorSensor.getColorID() == 1){
-  lastAngle = ...;
+  lastAngle = getM();
   double lightValue = colorSensor.getFloodlight();
   double error = lightValue - offset; 
   dt = 0;
@@ -177,7 +177,11 @@ private  void followLine(){
 private  boolean findLine() {
 	float[] sample = new float[colorProvider.sampleSize()];
 	sample[0] = -1;
-	while (sample[0] != 1) { turn(...towards lastAngle); colorProvider.fetchSample(sample, 0);}
+	while (sample[0] > 0.5) {
+		if(lastAngle > getM()) turn(getM()+10); 
+		else turn(getM()-10);
+		colorProvider.fetchSample(sample, 0);
+	}
 	return true;
 }
 }
