@@ -31,7 +31,7 @@ private  EV3UltrasonicSensor ultrasonicSensor;
 private SampleProvider gyroProvider; // use this to fetch samples
 private SampleProvider colorProvider; 
 private SampleProvider distanceProvider; 
-	        
+
 public  void main(String[] args) {
  motorB = new UnregulatedMotor(MotorPort.B);
  motorC = new UnregulatedMotor(MotorPort.C);
@@ -107,47 +107,33 @@ public float getM() {
 		  return sample[0];
 }
 private void turn(float degrees) {
-	int P, I, D = 1;
-    int integral, previous_error, setpoint = 0;
-    double error = setpoint - getM();
-	
+	double tP =0.15;
+	double tI =0.01;
+	double tD = 0.01;
+	double Tintegral = 0;
+	int Tprevious_error = 0;
+    double error = degrees - getM();
+    Tintegral += (error*0.2);
+    double Tderivative = (error - Tprevious_error) / .02;
+    double rcw = tP*error+tI*Tintegral+tD* Tderivative;
 	while (getM()!=degrees) {
 		
-		if (degrees>0) {
-			motorB.backward();
-			motorC.forward();
-
-		}
-		else if(degrees<0) {
-			motorB.forward();
-			motorC.backward();
-		}
-		else {
-			arcadeDrive(0,0);
-		}
+			/*
+			 * if (degrees>0) { motorB.backward(); motorC.forward();
+			 * 
+			 * } else if(degrees<0) { motorB.forward(); motorC.backward(); } else {
+			 * arcadeDrive(0,0); }
+			 */
+		arcadeDrive(0,rcw);
 	}
 }
 	
-	        
-private void findInitialLine() {
-
-	                // Use the "calibrated" variable as your sample source
-	                // to call fetchSample() on
-
-	                // Turn using turn(), and take samples while its turning
-
-	                // When you've finished turning, turn back to the location
-	                // where you saw the best reading.
-	                //
-	                // Hint: see the following methods that your motors support:
-	                // http://web.suffieldacademy.org/cs/lejos_ev3_api/lejos/robotics/Encoder.html#getTachoCount--
-	                // http://web.suffieldacademy.org/cs/lejos_ev3_api/lejos/robotics/Encoder.html#resetTachoCount--
-}
 
 private  void followLine(){
- double Kp = 0.005;
- double Ki = 375; 
- double Kd = 25; 
+ double Kp = 0.15;
+ double Ki = 0.01; 
+ double Kd = 0.0; 
+ double Kf = 0.2;
  double integral = 0;
  double derivative = 0;
  double lastError = 0;
