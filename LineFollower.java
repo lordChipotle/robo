@@ -31,6 +31,7 @@ public class LineFollower {
 	private static SampleProvider colorProvider;
 
 	public static void main(String[] args) {
+		
 		motorB = new UnregulatedMotor(MotorPort.B);
 		motorC = new UnregulatedMotor(MotorPort.C);
 		colorSensor = new EV3ColorSensor(SensorPort.S3);
@@ -39,19 +40,25 @@ public class LineFollower {
 		gyroProvider = gyro.getAngleMode();
 		colorProvider = colorSensor.getColorIDMode();
 		gyro.reset();
-		move(); // start it running
-	}
+		if (colorSensor.getColorID() <6&&colorSensor.getColorID()>4){
+			move();
+		}
+		}
+		 // start it running
+	
 
 	private static void move() {
-		while (colorSensor.getColorID() == 5) {
-			motorB.stop();
-			motorC.stop();
-		}
-// so long as we can keep finding the line...
+    // so long as we can keep finding the line...
+	
 		while (findLine()) {
 			followLine();
 		}
+		motorB.stop();
+		motorC.stop();
 	}
+
+	
+	
 
 	public static void tankDrive(double left, double right) {
 		if (left > 100) {
@@ -159,12 +166,13 @@ public class LineFollower {
 
 	private static boolean findLine() {
 		float[] sample = new float[colorProvider.sampleSize()];
-		sample[0] = -1;
+	    sample[0] = -1;
 		while (sample[0] > 0.5) {
-			if (lastAngle > getM())
-				turn(getM() + 10,0.15);
-			else
-				turn(getM() - 10,0.15);
+			//if (lastAngle > getM())
+			//	turn(getM() + 10,0.15);
+			//else
+			//	turn(getM() - 10,0.15);
+			turn(45, 0.15);
 			colorProvider.fetchSample(sample, 0);
 		}
 		return true;
