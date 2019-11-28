@@ -1,8 +1,7 @@
-import lejos.hardware.ev3.EV3;
-import lejos.hardware.motor.Motor;
+package k18;
+
 import lejos.hardware.motor.UnregulatedMotor;
 import lejos.hardware.port.MotorPort;
-import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3GyroSensor;
@@ -13,41 +12,37 @@ import java.lang.Math;
 
 public class LineFollower {
 	/** The EV3 brick we're controlling */
-	private EV3 brick;
 
-	private float lastAngle;
+	private static float lastAngle;
 
 	/** The motor on the left side of the robot */
-	private UnregulatedMotor motorB;
+	private static UnregulatedMotor motorB;
 
 	/** The motor on the right side of the robot */
-	private UnregulatedMotor motorC;
+	private static UnregulatedMotor motorC;
 
 	/** The raw EV3 Color Sensor object */
-	private EV3ColorSensor colorSensor;
+	private static EV3ColorSensor colorSensor;
 
-	private EV3GyroSensor gyro;
+	private static EV3GyroSensor gyro;
 	/** The raw EV3 Ultrasonic Sensor object */
-	private EV3UltrasonicSensor ultrasonicSensor;
 
-	private SampleProvider gyroProvider; // use this to fetch samples
-	private SampleProvider colorProvider;
-	private SampleProvider distanceProvider;
+	private static SampleProvider gyroProvider; // use this to fetch samples
+	private static SampleProvider colorProvider;
 
-	public void main(String[] args) {
+	public static void main(String[] args) {
 		motorB = new UnregulatedMotor(MotorPort.B);
 		motorC = new UnregulatedMotor(MotorPort.C);
 		colorSensor = new EV3ColorSensor(SensorPort.S3);
-		ultrasonicSensor = new EV3UltrasonicSensor(SensorPort.S4);
+		//ultrasonicSensor = new EV3UltrasonicSensor(SensorPort.S4);
 		gyro = new EV3GyroSensor(SensorPort.S2);
 		gyroProvider = gyro.getAngleMode();
-		colorProvider = colorSensor.getMode("color");
-		distanceProvider = ultrasonicSensor.getMode("distance");
+		colorProvider = colorSensor.getColorIDMode();
 		gyro.reset();
 		move(); // start it running
 	}
 
-	private void move() {
+	private static void move() {
 		while (colorSensor.getColorID() == 5) {
 			motorB.stop();
 			motorC.stop();
@@ -58,7 +53,7 @@ public class LineFollower {
 		}
 	}
 
-	public void tankDrive(double left, double right) {
+	public static void tankDrive(double left, double right) {
 		if (left > 100) {
 			left = 100;
 		} else if (left < -100) {
@@ -93,7 +88,7 @@ public class LineFollower {
 
 	}
 
-	public void arcadeDrive(double throttleValue, double turnValue) {
+	public static void arcadeDrive(double throttleValue, double turnValue) {
 		double leftMtr;
 		double rightMtr;
 		leftMtr = throttleValue + turnValue;
@@ -101,13 +96,13 @@ public class LineFollower {
 		tankDrive(leftMtr, rightMtr);
 	}
 
-	public float getM() {
+	public static float getM() {
 		float[] sample = new float[gyroProvider.sampleSize()];
 		while (true)
 			return sample[0];
 	}
 
-	private void turn(float degrees, double kP) {
+	private static void turn(float degrees, double kP) {
 
 		double error = degrees - getM();
 		if (getM() > degrees) {
@@ -131,7 +126,7 @@ public class LineFollower {
 		 */
 	}
 
-	private void followLine() {
+	private static void followLine() {
 		double Kp = 0.15;
 		//double Ki = 0.01;
 		//double Kd = 0.0;
@@ -151,7 +146,7 @@ public class LineFollower {
 			//dt = 0;
 			//integral = integral + error * dt;
 			//derivative = (error - lastError) / dt;
-			double turn = Kp * offset; //+ Ki * integral + Kd * derivative;
+			double turn = Kp * error; //+ Ki * integral + Kd * derivative;
 			bTurn = Tp + turn;
 			cTurn = Tp - turn;
 			//lastError = error;
@@ -162,7 +157,7 @@ public class LineFollower {
 		}
 	}
 
-	private boolean findLine() {
+	private static boolean findLine() {
 		float[] sample = new float[colorProvider.sampleSize()];
 		sample[0] = -1;
 		while (sample[0] > 0.5) {
