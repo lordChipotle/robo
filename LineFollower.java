@@ -1,6 +1,5 @@
-package k18;
 
-import lejos.hardware.motor.UnregulatedMotor;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
@@ -8,18 +7,19 @@ import lejos.hardware.sensor.EV3GyroSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.*;
 import java.lang.Math;
+import lejos.utility.Delay; 
 
 
 public class LineFollower {
 	/** The EV3 brick we're controlling */
 
-	private static float lastAngle;
+	//private static float lastAngle;
 
 	/** The motor on the left side of the robot */
-	private static UnregulatedMotor motorB;
+	private static EV3LargeRegulatedMotor motorB;
 
 	/** The motor on the right side of the robot */
-	private static UnregulatedMotor motorC;
+	private static EV3LargeRegulatedMotor motorC;
 
 	/** The raw EV3 Color Sensor object */
 	private static EV3ColorSensor colorSensor;
@@ -32,35 +32,30 @@ public class LineFollower {
 
 	public static void main(String[] args) {
 		
-		motorB = new UnregulatedMotor(MotorPort.B);
-		motorC = new UnregulatedMotor(MotorPort.C);
+		motorB = new EV3LargeRegulatedMotor(MotorPort.B);
+		motorC = new EV3LargeRegulatedMotor(MotorPort.C);
 		colorSensor = new EV3ColorSensor(SensorPort.S3);
 		//ultrasonicSensor = new EV3UltrasonicSensor(SensorPort.S4);
 		gyro = new EV3GyroSensor(SensorPort.S2);
 		gyroProvider = gyro.getAngleMode();
 		colorProvider = colorSensor.getColorIDMode();
 		gyro.reset();
-		if (colorSensor.getColorID() <6&&colorSensor.getColorID()>4){
+		move();
+		/*if (colorSensor.getColorID() <6 && colorSensor.getColorID()>4){
 			move();
-		}
-		}
+		}*/
+}
 		 // start it running
 	
 
 	private static void move() {
-    // so long as we can keep finding the line...
-	
-		while (findLine()) {
-			followLine();
-		}
-		motorB.stop();
-		motorC.stop();
+        while(colorSensor.getColorID() == 5) { Delay.msDelay(100); }
+		if(colorSensor.getColorID() != 5) {
+			followLine(); 
+		}	
 	}
 
-	
-	
-
-	public static void tankDrive(double left, double right) {
+	/*public static void tankDrive(double left, double right) {
 		if (left > 100) {
 			left = 100;
 		} else if (left < -100) {
@@ -72,21 +67,21 @@ public class LineFollower {
 			right = -100;
 		}
 		if (left > 0) {
-			motorB.setPower((int) Math.abs(right));
+			motorB.setSpeed((int) Math.abs(right));
 
 			motorB.forward();
 			if (right > 0) {
-				motorC.setPower((int) Math.abs(right));
+				motorC.setSpeed((int) Math.abs(right));
 				motorC.forward();
 			} else if (right < 0) {
-				motorC.setPower((int) Math.abs(right));
+				motorC.setSpeed((int) Math.abs(right));
 
 				motorC.backward();
 			} else {
 				motorC.stop();
 			}
 		} else if (left < 0) {
-			motorB.setPower((int) Math.abs(right));
+			motorB.setSpeed((int) Math.abs(right));
 
 			motorB.backward();
 		} else {
@@ -117,21 +112,7 @@ public class LineFollower {
 		} else {
 			arcadeDrive(0, -kP * error);
 		}
-
-		/*
-		 * double tD = 0.01; int Tprevious_error = 0; double error = degrees - getM();
-		 * double Tderivative = (error - Tprevious_error) / timer; double rcw =
-		 * tP*error+tD* Tderivative; while ((int)getM()!=(int)degrees) {
-		 * 
-		 * 
-		 * if (degrees>0) { motorB.backward(); motorC.forward();
-		 * 
-		 * } else if(degrees<0) { motorB.forward(); motorC.backward(); } else {
-		 * arcadeDrive(0,0); }
-		 * 
-		 * arcadeDrive(0,rcw); }
-		 */
-	}
+	}*/
 
 	private static void followLine() {
 		double Kp = 0.15;
@@ -146,8 +127,8 @@ public class LineFollower {
 		double bTurn;
 		double offset = 45;
 		double Tp = 50;
-		while (colorSensor.getColorID() == 1) {
-			lastAngle = getM();
+		while (getState()) {
+			//lastAngle = getM();
 			double lightValue = colorSensor.getFloodlight();
 			double error = lightValue - offset;
 			//dt = 0;
@@ -157,24 +138,32 @@ public class LineFollower {
 			bTurn = Tp + turn;
 			cTurn = Tp - turn;
 			//lastError = error;
-			motorB.setPower(new Double(bTurn).intValue());
+			motorB.setSpeed(new Double(bTurn).intValue());
 			motorB.forward();
-			motorC.setPower(new Double(cTurn).intValue());
+			motorC.setSpeed(new Double(cTurn).intValue());
 			motorC.forward();
 		}
 	}
 
-	private static boolean findLine() {
-		float[] sample = new float[colorProvider.sampleSize()];
+	private static boolean getState() {
+		/*float[] sample = new float[colorProvider.sampleSize()];
 	    sample[0] = -1;
 		while (sample[0] > 0.5) {
-			//if (lastAngle > getM())
-			//	turn(getM() + 10,0.15);
-			//else
-			//	turn(getM() - 10,0.15);
 			turn(45, 0.15);
 			colorProvider.fetchSample(sample, 0);
-		}
-		return true;
+		}*/
+		if(colorSensor.getColorID() == 1) return true; 
+		else if(colorSensor.getColorID() == 5) return false; 
+		else { return findLine(); }
+	}
+	
+	private static boolean findLine() {
+		while(colorSensor.getColorID() != 1) { turnDegree(45); }
+		return true; 
+	}
+	
+	private static void turnDegree(float degree) {
+		motorB.rotate(45);
+		motorC.rotate(45);
 	}
 }
