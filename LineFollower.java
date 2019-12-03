@@ -40,13 +40,7 @@ public class LineFollower {
 	
 	private static void move() {
 		double Kp = 300;
-		//double Ki = 0;
-		//double Kd = 0;
-		//double integral = 0;
-		//double derivative = 0;
-	    //double lastError = 0;
-		//double dt = System.currentTimeMillis()/1000;
-		double offset = 0.45; 
+		double offset = 0.45; // 0.38; 
 		double cTurn;
 		double bTurn;
 		double Tp = 50;
@@ -62,9 +56,7 @@ public class LineFollower {
           }
           if(colorSensor.getColorID() == 5){ break; }
 		  double error = values[0] - offset; 
-		  //integral = integral + error * dt;
-		  //derivative = (error - lastError) / dt;
-	      double turn = Kp * error; //Ki * integral + Kd * derivative;
+	      double turn = Kp * error; 
 		  bTurn = Tp + turn;
 		  cTurn = Tp - turn;
 		  lastError = error;
@@ -74,7 +66,6 @@ public class LineFollower {
 		  motorC.forward();
 		  intensityProvider.fetchSample(values,0);
           distanceProvider.fetchSample(distance,0);
-		  //dt = System.currentTimeMillis()/1000 - dt; 
 		}
         stop(); 
 	}
