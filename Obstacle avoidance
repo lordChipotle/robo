@@ -3,8 +3,8 @@ public static void MoveAtAngle(int timeInSec, int angle){
 	long timeInMilliSec = timeInSec * 1000;
 	while(System.currentTimeMillis() - startTime <= timeInMilliSec){
   	motorC.forward(angle);      //dan and alexandra: use gyro to move forward at a certain angle
-		motorB.forward(angle);      //dan and alexandra: use gyro to move forward at a certain angle 
-			}
+	motorB.forward(angle);      //dan and alexandra: use gyro to move forward at a certain angle 
+	}
 }
 
 boolean obstacleClose = false;
@@ -22,6 +22,7 @@ if ((distanceToObject > 0.5) && obstacleClose){
   MoveAtAngle(5,50);      //move at angle 50 for 5 seconds
   MoveAtAngle(5,-50);     //move at angle -50 for 5 seconds 
   findline();   //dan and alexandra: make the robot continue following the line
+  obstacleClose = false;
   
 }
 
