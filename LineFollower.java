@@ -25,6 +25,10 @@ public class LineFollower3{
 	/** The raw EV3 Color Sensor object */
 	private static EV3ColorSensor colorSensor;
 	
+	private static SampleProvider intensityProvider;
+	
+	private static float[] values; 
+	
 	/** The raw EV3 Ultrasonic Sensor object */
 	//private static EV3UltrasonicSensor ultrasonicSensor;
 	
@@ -37,6 +41,8 @@ public class LineFollower3{
 		motorC = new EV3LargeRegulatedMotor(MotorPort.C);
 		//motorD = new EV3LargeRegulatedMotor(MotorPort.D);
 		colorSensor = new EV3ColorSensor(SensorPort.S3);
+		intensityProvider = colorSensor.getRedMode(); 
+		values = new float[intensityProvider.sampleSize()];
 		//ultrasonicSensor = new EV3UltrasonicSensor(SensorPort.S4);
         //ultrasonicSensor.enable(); 
 		//distanceProvider = ultrasonicSensor.getDistanceMode(); 
@@ -44,33 +50,24 @@ public class LineFollower3{
 		
 		Button.waitForAnyPress(); 
 		
-		while(colorSensor.getColorID() == 5) { Delay.msDelay(100);}
+		intensityProvider.fetchSample(values, 0);
 		
-		move();
+		while(colorSensor.getColorID() != Color.BLACK) { Delay.msDelay(100); }
 		
-		motorB.stop(); 
-		motorC.stop(); 
-		
-		//while(colorSensor.getColorID() != 5) {
-		//     move(); 
-		//     if( distance[0] < 20 ) { motorD.rotate(90); avoidObstacle(); }
-		//     while(colorSensor.getColorID() == 5) { Delay.msDelay(100); } 
-		//  } 
+		move(); 
 	}
 	
 	private static void move() {
-		double Kp = 350;  
-		double offset = 0.35; //0.38
+		double Kp = 400; //350;  
+		double offset = 0.45; //0.38 // try less than 20 
 		double cTurn;
 		double bTurn;
 		double Tp = 50;
-		SampleProvider intensityProvider = colorSensor.getRedMode(); 
-		float[] values = new float[intensityProvider.sampleSize()];
+		//SampleProvider intensityProvider = colorSensor.getRedMode(); 
+		//float[] values = new float[intensityProvider.sampleSize()];
 		intensityProvider.fetchSample(values,0); 
         //distanceProvider.fetchSample(distance,0); 
-		while(colorSensor.getColorID() != 5){
-		  LCD.clear(); 
-		  LCD.drawChar((char)values[0], 3,3);
+		while(values[0] < 1){
 		  double error = values[0] - offset; 
 	      double turn = Kp * error; 
 		  bTurn = Tp - turn;
@@ -81,15 +78,22 @@ public class LineFollower3{
 		  motorC.forward();
 		  intensityProvider.fetchSample(values,0);
 		 // distanceProvider.fetchSample(distance,0);
-		 // if(distance[0] < 20) { break; }
+		 // if(distance[0] < 20) { avoidObstacle(); }
+		  while(colorSensor.getColorID() !=  Color.BLACK) { motorB.stop(); motorC.stop(); }
 		} 
 	}
 	
 	/*private static void avoidObstacle(){
-		while( distance[0] < 20 ) {
+	    motorB.rotate(45); 
+	    motorC.rotate(45); 
+	    intensityProvider.fetchSample(values,0); 
+		while( values[0] >= 0.80 && distance[0] < 40 ) {
 		  ...
 		  distanceProvider.fetchSample(distance,0);
+		  intensityProvider.fetchSample(values,0); 
 		}
 		motorD.rotate(-90); 
 	}*/
+	
+	
 }
