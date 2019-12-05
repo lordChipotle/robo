@@ -79,17 +79,20 @@ public class LineFollower3{
 		  intensityProvider.fetchSample(values,0);
 		 // distanceProvider.fetchSample(distance,0);
 		 // if(distance[0] < 20) { avoidObstacle(); }
-		  while(colorSensor.getColorID() !=  Color.BLACK) { motorB.stop(); motorC.stop(); }
+		  while(colorSensor.getColorID() !=  Color.BLACK && colorSensor.getColorID() !=  Color.WHITE) { motorB.stop(); motorC.stop(); }
 		} 
 	}
 	
 	/*private static void avoidObstacle(){
-	    motorB.rotate(45); 
-	    motorC.rotate(45); 
+	    motorB.rotate(90); 
+	    motorC.rotate(90); 
 	    intensityProvider.fetchSample(values,0); 
-		while( values[0] >= 0.80 && distance[0] < 40 ) {
-		  ...
+	    double target = distance[0]; 
+	    while(values[0] >= 0.80/color.getColorID() == Color.WHITE) {
 		  distanceProvider.fetchSample(distance,0);
+		  if(distance[0] < target) { motorB.rotate(10); motorC.rotate(10); motorB.forward(); motorC.forward();}
+		  else if(distance[0] > target) { motorB.rotate(-10); motorC.rotate(-10); motorB.forward(); motorC.forward();}
+		  else if(distance[0] == target) { motorB.forward(); motorC.forward(); }
 		  intensityProvider.fetchSample(values,0); 
 		}
 		motorD.rotate(-90); 
