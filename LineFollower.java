@@ -97,10 +97,9 @@ public class LineFollower3{
 	    intensityProvider.fetchSample(values,0);  
 	    while(values[0] >= 0.60) {
 		  distanceProvider.fetchSample(distance,0);
-		  if(distance[0] < target) { motorB.setSpeed(100); motorC.setSpeed(50); }
-		  else if(distance[0] > target) { motorB.setSpeed(50); motorC.setSpeed(100); }
-		  else if(distance[0] == target) { motorB.setSpeed(50); motorC.setSpeed(50);}
-		  motorB.forward(); motorC.forward();
+		  if(distance[0] < target) { motorB.setSpeed(100); motorC.setSpeed(50); motorB.forward(); motorC.forward();}
+		  else if(distance[0] > target) { motorB.setSpeed(50); motorC.setSpeed(100); motorB.forward(); motorC.forward(); }
+		  else if(distance[0] == target) { motorB.setSpeed(50); motorC.setSpeed(50); motorB.forward(); motorC.forward();}
 		  intensityProvider.fetchSample(values,0); 
 		}
 	    motorB.stop(); 
