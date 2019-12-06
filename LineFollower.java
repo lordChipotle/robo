@@ -108,6 +108,8 @@ public class LineFollower3{
 	    motorA.rotate(90); 
 		motorB.setSpeed(20);
 		motorC.setSpeed(20);
+		motorB.forward();
+		motorC.forward();
 		while(values[0] < 0.20){
 		  motorB.setSpeed(50);
 		  motorC.setSpeed(10);
