@@ -50,17 +50,21 @@ public class LineFollower3{
 		distanceProvider = ultrasonicSensor.getDistanceMode(); 
 		distance = new float[distanceProvider.sampleSize()];
 		
+		motorB.setSpeed(0);
+		motorC.setSpeed(0);
+		
 		Button.waitForAnyPress(); 
 		
 		intensityProvider.fetchSample(values, 0);
 		
-		//while(colorSensor.getColorID() == 5) { Delay.msDelay(100); }
+		while(colorSensor.getColorID() == Color.RED) { motorB.stop(); motorC.stop(); Delay.msDelay(100); }
 		
 		move(); 
 	}
 	
 	private static void move() {
-		double Kp = 400;   
+		int n = 3; 
+		double Kp = 380; //400
 		double offset = 0.38; 
 		double cTurn;
 		double bTurn;
@@ -77,19 +81,19 @@ public class LineFollower3{
 		  motorC.forward();
 		  intensityProvider.fetchSample(values,0);
 		  distanceProvider.fetchSample(distance,0);
-		  if(distance[0] < 0.10) { target = distance[0]; motorB.stop(); motorC.stop(); avoidObstacle(); }
-		  //while(colorSensor.getColorID() ==  5) { motorB.stop(); motorC.stop(); }
+		  if(distance[0] < 0.10) { target = distance[0]; motorB.stop(); motorC.stop(); avoidObstacle(n); n = n-1; }
+		  while(colorSensor.getColorID() ==  Color.RED) { motorB.stop(); motorC.stop(); Delay.msDelay(100);}
 		} 
 	}
 	
-	private static void avoidObstacle(){
+	private static void avoidObstacle(int obstacle){
 	    motorB.setSpeed(50);
 	    motorC.setSpeed(50);
 	    motorB.rotate(180); 
 	    motorC.rotate(-180);
 	    motorB.backward();
 	    motorC.backward();
-	    Delay.msDelay(100);
+	    Delay.msDelay(10);
 	    motorA.rotate(-90);
 	    motorB.forward();
 	    motorC.forward();
@@ -105,15 +109,18 @@ public class LineFollower3{
 	    motorB.stop(); 
 	    motorC.stop(); 
 	    motorA.rotate(90); 
-		motorB.setSpeed(20);
-		motorC.setSpeed(20);
-		motorB.forward();
-		motorC.forward();
-		while(values[0] < 0.20){
-		  motorB.setSpeed(50);
-		  motorC.setSpeed(10);
-		  motorB.forward();
-		  motorC.forward(); 
+		motorB.setSpeed(50);
+		motorC.setSpeed(50);
+		if(obstacle == 3){
+		 motorB.backward();
+		 motorC.backward();
+		 Delay.msDelay(1000);
+		 while(colorSensor.getColorID() == Color.WHITE){
+		  motorB.rotate(60);
+		  motorC.rotate(-60);
+		  motorB.forward(); 
+		  motorC.forward();
+		  }
 		}
-	}
+	} 
 }
