@@ -54,7 +54,7 @@ public class LineFollower3{
 		
 		intensityProvider.fetchSample(values, 0);
 		
-		//while(colorSensor.getColorID() == 5) { Delay.msDelay(100); }
+		while(colorSensor.getColorID() == Color.RED) { Delay.msDelay(100); }
 		
 		move(); 
 	}
@@ -78,7 +78,7 @@ public class LineFollower3{
 		  intensityProvider.fetchSample(values,0);
 		  distanceProvider.fetchSample(distance,0);
 		  if(distance[0] < 0.10) { target = distance[0]; motorB.stop(); motorC.stop(); avoidObstacle(); }
-		  //while(colorSensor.getColorID() ==  5) { motorB.stop(); motorC.stop(); }
+		  while(colorSensor.getColorID() ==  Color.RED) { motorB.stop(); motorC.stop(); Delay.msDelay(100)}
 		} 
 	}
 	
@@ -110,8 +110,8 @@ public class LineFollower3{
 		motorB.forward();
 		motorC.forward();
 		while(values[0] < 0.20){
-		  motorB.setSpeed(50);
-		  motorC.setSpeed(10);
+		  motorB.rotate(10);
+		  motorC.rotate(-10);
 		  motorB.forward();
 		  motorC.forward(); 
 		}
