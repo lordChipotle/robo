@@ -60,8 +60,7 @@ public class LineFollower3{
 	}
 	
 	private static void move() {
-		double Kp = 400;   
-		double Kd = 40; 
+		double Kp = 400;  
 		double offset = 0.38; 
 		double cTurn;
 		double bTurn;
@@ -70,10 +69,7 @@ public class LineFollower3{
 		intensityProvider.fetchSample(values,0); 
 		while(values[0] < 1){
 		  double error = values[0] - offset; 
-		  double dt = System.currentTimeMillis() - prevTime; 
-		prevTime = System.currentTimeMillis(); 
-		  double derror = error * dt;
-	      double turn = Kp * error + Kd*derror; 
+	          double turn = Kp * error; 
 		  bTurn = Tp - turn;
 		  cTurn = Tp + turn;
 		  motorB.setSpeed(new Double(bTurn).intValue());
