@@ -122,5 +122,9 @@ public class LineFollower3{
 		  motorC.forward();
 		  }
 		}
+		else if(n==2){
+		  motorB.rotate(10); 
+		  motorC.rotate(-10); 
+		}
 	} 
 }
