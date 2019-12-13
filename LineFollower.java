@@ -110,11 +110,14 @@ public class LineFollower3{
 	    motorB.stop(); 
 	    motorC.stop(); 
 	    motorA.rotate(90); 
-		motorB.setSpeed(50);
-		motorC.setSpeed(50);
-		while(values[0] < 0.20){
-		  motorB.rotate(10);
-		  motorC.rotate(-10);
+	    motorB.setSpeed(50);
+	    motorC.setSpeed(50);
+	    motorB.backward(); 
+	    motorC.backward():
+	    Delay.msDelay(100); 
+	    while(colorSensor.getColorID() == Color.WHITE){
+		  motorB.rotate(45);
+		  motorC.rotate(-45);
 		  motorB.forward();
 		  motorC.forward(); 
 		}
